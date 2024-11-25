@@ -24,11 +24,16 @@ class PurchaseStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'=>'required|exists:users,id',
-            "payment_type"=>['required', Rule::in(PaymentType::values())],
-            "items"=>'required|array|min:1',
-            "items.*.item_id"=>'required|exists:items,id',
-            "items.*.item_quantity"=>'required|integer|min:1'
+            "payment_type" => ['required', Rule::in(PaymentType::values())],
+            "items" => 'required|array|min:1',
+            "items.*.item_id" => 'required|exists:items,id',
+            "items.*.item_quantity" => 'required|integer|min:1',
+            'address.cep' => 'required|size:8',
+            'address.number' => 'required|numeric',
+
+            'payment_data.card_number' => 'min:13|max:16|required_if:payment_type,' . PaymentType::CREDIT_CARD,
+            'payment_data.expiry_date' => 'required_if:payment_type,' . PaymentType::CREDIT_CARD,
+            'payment_data.cvv' => '|min:3|max:4|required_if:payment_type,' . PaymentType::CREDIT_CARD,
         ];
     }
 }

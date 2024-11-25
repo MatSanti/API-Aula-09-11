@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PurchaseStoreRequest;
+use App\Http\Requests\ReprocessPaymentRequest;
 use App\Http\Resources\PurchaseDetailsResource;
 use App\Http\Resources\PurchaseResource;
 use App\Services\PurchaseService;
@@ -35,7 +36,20 @@ class PurchaseController extends Controller
         }
 
         return response()->json([
-            "message" => "Compra nao encotrada",
+            "message" => "Purchase not found",
+        ], 404);
+    }
+
+    public function reprocessPayment($id, ReprocessPaymentRequest $request){
+        $data = $request->validated();
+        $purchase = $this->purchaseService->reprocessPayment($id, $data);
+
+        if($purchase){
+            return new PurchaseDetailsResource($purchase);
+        }
+
+        return response()->json([
+            "message" => "Purchase not found",
         ], 404);
     }
 
